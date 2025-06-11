@@ -16,14 +16,40 @@ def load_data():
 df = load_data()
 
 # --- إضافة الشعار واسم الشركة ---
-col1, col2 = st.columns([1, 9])
-with col1:
-    st.image("company_logo.png.png", width=100)
-with col2:
-    st.markdown("""
-        <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 0;'>شركة الفنار لتوزيع الأدوية</h1>
-        <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
-    """, unsafe_allow_html=True)
+# --- عرض الشعار في اليمين، والعنوان في المنتصف ---
+st.markdown("""
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="flex: 1;">
+            <!-- شعار في اليمين -->
+            <img src="company_logo.png" width="100" style="float: right;"/>
+        </div>
+        <div style="flex: 2; text-align: center;">
+            <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
+            <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
+        </div>
+        <div style="flex: 1;">
+            <!-- مسافة فارغة من اليسار -->
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# --- عرض المؤشرات الرئيسية بخط كبير ---
+st.markdown("""
+    <style>
+    .big-metric {
+        font-size: 40px !important;
+        font-weight: bold;
+        color: #0066cc;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+col1.markdown(f"<div class='big-metric'>📅 مبيعات اليوم: {sales_today:,.0f} ريال</div>", unsafe_allow_html=True)
+col2.markdown(f"<div class='big-metric'>🗓️ مبيعات الشهر: {sales_month:,.0f} ريال</div>", unsafe_allow_html=True)
+col3.markdown(f"<div class='big-metric'>💰 إجمالي المبيعات: {total_sales:,.0f} ريال</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 
