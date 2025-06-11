@@ -50,7 +50,7 @@ st.markdown(f"""
         </div>
         <div class="metric-box">
             <div class="metric-title">💰 إجمالي المبيعات</div>
-            <div class="metric-value">{total_sales:,.0f} ريال</div>
+            <div class="metric-value">جنيه {total_sales:,.0f} ريال</div>
         </div>
     </div>
 """, unsafe_allow_html=True)
