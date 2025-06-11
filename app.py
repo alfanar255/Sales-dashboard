@@ -26,7 +26,17 @@ total_sales = df['المبيعات'].sum()
 # --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; justify-content: flex-end;">
-        <img src="company_logo2.png" width="120" />
+        logo_url = "https://raw.githubusercontent.com/username/repo-name/main/assets/company_logo2.png"
+
+st.markdown(f"""
+    <div style="display: flex; justify-content: flex-end;">
+        <img src="{logo_url}" width="120" />
+    </div>
+    <div style="text-align: center; margin-top: -60px;">
+        <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
+        <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
+    </div>
+""", unsafe_allow_html=True)
     </div>
     <div style="text-align: center; margin-top: -60px;">
         <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
