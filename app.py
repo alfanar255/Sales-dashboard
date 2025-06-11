@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# --- إعداد الصفحة ---
+# --- إعداد  الصفحة ---
 st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار")
 
 # --- تحميل البيانات ---
