@@ -26,7 +26,7 @@ total_sales = df['المبيعات'].sum()
 # --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; justify-content: flex-end;">
-        logo_url = "https://raw.githubusercontent.com/username/repo-name/main/assets/company_logo2.png"
+        logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/blob/main/company_logo2.png"
 
 st.markdown(f"""
     <div style="display: flex; justify-content: flex-end;">
