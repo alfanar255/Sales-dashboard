@@ -18,7 +18,7 @@ df = load_data()
 # --- إضافة الشعار واسم الشركة ---
 col1, col2 = st.columns([1, 9])
 with col1:
-    st.image("6a769ecc-9188-48a9-8681-caf690e6a28e_20241015_232335_1-removebg-preview.png", width=100)
+    st.image("company_logo.png", width=100)
 with col2:
     st.markdown("""
         <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 0;'>شركة الفنار لتوزيع الأدوية</h1>
@@ -42,9 +42,9 @@ total_sales = df['المبيعات'].sum()
 
 # --- عرض النتائج ---
 col1, col2, col3 = st.columns(3)
-col1.metric("📅 مبيعات اليوم", f"{sales_today:,.0f} جنيه")
-col2.metric("🗓️ مبيعات الشهر", f"{sales_month:,.0f} جنيه")
-col3.metric("💰 إجمالي المبيعات", f"{total_sales:,.0f} جنيه")
+col1.metric("📅 مبيعات اليوم", f"{sales_today:,.0f} ريال")
+col2.metric("🗓️ مبيعات الشهر", f"{sales_month:,.0f} ريال")
+col3.metric("💰 إجمالي المبيعات", f"{total_sales:,.0f} ريال")
 
 st.markdown("---")
 
