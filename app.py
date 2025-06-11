@@ -2,31 +2,51 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="لوحة المبيعات", layout="wide")
+# --- إعداد الصفحة ---
+st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار")
 
-SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
-
+# --- تحميل البيانات ---
 @st.cache_data(ttl=60)
 def load_data():
-    df = pd.read_csv(SHEET_URL)
+    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
+    df = pd.read_csv(url)
     df['التاريخ'] = pd.to_datetime(df['التاريخ'])
     return df
 
 df = load_data()
-today = pd.to_datetime(datetime.today().date())
-month_start = today.replace(day=1)
 
-daily_sales = df[df['التاريخ'] == today]['المبيعات'].sum()
-monthly_sales = df[df['التاريخ'] >= month_start]['المبيعات'].sum()
+# --- إضافة الشعار واسم الشركة ---
+col1, col2 = st.columns([1, 9])
+with col1:
+    st.image("6a769ecc-9188-48a9-8681-caf690e6a28e_20241015_232335_1-removebg-preview.png", width=100)
+with col2:
+    st.markdown("""
+        <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 0;'>شركة الفنار لتوزيع الأدوية</h1>
+        <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
+    """, unsafe_allow_html=True)
+
+st.markdown("---")
+
+# --- تحليل البيانات ---
+today = pd.Timestamp.today().normalize()
+df['اليوم'] = df['التاريخ'].dt.date
+
+# مبيعات اليوم
+sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
+
+# مبيعات الشهر
+sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
+
+# إجمالي المبيعات
 total_sales = df['المبيعات'].sum()
 
-st.title("📊 لوحة المبيعات")
-st.markdown("### ✅ تحديث تلقائي كل 60 ثانية")
-
+# --- عرض النتائج ---
 col1, col2, col3 = st.columns(3)
-col1.metric("مبيعات اليوم", f"{daily_sales:,.0f} ريال")
-col2.metric("مبيعات هذا الشهر", f"{monthly_sales:,.0f} ريال")
-col3.metric("إجمالي المبيعات", f"{total_sales:,.0f} ريال")
+col1.metric("📅 مبيعات اليوم", f"{sales_today:,.0f} جنيه")
+col2.metric("🗓️ مبيعات الشهر", f"{sales_month:,.0f} جنيه")
+col3.metric("💰 إجمالي المبيعات", f"{total_sales:,.0f} جنيه")
 
-daily_chart = df.groupby('التاريخ')['المبيعات'].sum().reset_index()
-st.line_chart(daily_chart.rename(columns={'التاريخ': 'index'}).set_index('index'))
+st.markdown("---")
+
+# --- رسم بياني خطي ---
+st.line_chart(df.set_index('التاريخ')['المبيعات'])
