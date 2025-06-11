@@ -24,7 +24,8 @@ sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات
 total_sales = df['المبيعات'].sum()
 
 # --- رابط الشعار من GitHub (استبدله برابطك الحقيقي) ---
-logo_url = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/PATH_TO_IMAGE/company_logo2.png"
+logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
+st.image(logo_url, width=120)
 
 # --- عرض الشعار والعنوان ---
 st.markdown(f"""
