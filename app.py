@@ -42,15 +42,15 @@ st.markdown(f"""
     <div class="metric-container">
         <div class="metric-box">
             <div class="metric-title">📅 مبيعات اليوم</div>
-            <div class="metric-value">{sales_today:,.0f} ريال</div>
+            <div class="metric-value">{sales_today:,.0f} جنيه</div>
         </div>
         <div class="metric-box">
             <div class="metric-title">🗓️ مبيعات الشهر</div>
-            <div class="metric-value">{sales_month:,.0f} ريال</div>
+            <div class="metric-value">{sales_month:,.0f} جنيه</div>
         </div>
         <div class="metric-box">
             <div class="metric-title">💰 إجمالي المبيعات</div>
-            <div class="metric-value">جنيه {total_sales:,.0f} ريال</div>
+            <div class="metric-value"> {total_sales:,.0f} جنيه</div>
         </div>
     </div>
 """, unsafe_allow_html=True)
