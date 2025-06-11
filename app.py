@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# --- إعداد  الصفحة ---
+# --- إعداد الصفحة ---
 st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار")
 
-# --- تحميل البيانات ---
+# --- تحميل البيانات من Google Sheets ---
 @st.cache_data(ttl=60)
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
@@ -15,7 +15,14 @@ def load_data():
 
 df = load_data()
 
-# --- إضافة الشعار واسم الشركة ---
+# --- تحليل البيانات ---
+today = pd.Timestamp.today().normalize()
+df['اليوم'] = df['التاريخ'].dt.date
+
+sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
+sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
+total_sales = df['المبيعات'].sum()
+
 # --- عرض الشعار في اليمين، والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -35,7 +42,7 @@ st.markdown("""
 
 st.markdown("---")
 
-# --- عرض المؤشرات الرئيسية بخط كبير ---
+# --- تنسيق الأرقام بخط كبير ---
 st.markdown("""
     <style>
     .big-metric {
@@ -46,6 +53,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- عرض المؤشرات ---
 col1, col2, col3 = st.columns(3)
 col1.markdown(f"<div class='big-metric'>📅 مبيعات اليوم: {sales_today:,.0f} ريال</div>", unsafe_allow_html=True)
 col2.markdown(f"<div class='big-metric'>🗓️ مبيعات الشهر: {sales_month:,.0f} ريال</div>", unsafe_allow_html=True)
@@ -53,26 +61,5 @@ col3.markdown(f"<div class='big-metric'>💰 إجمالي المبيعات: {tot
 
 st.markdown("---")
 
-# --- تحليل البيانات ---
-today = pd.Timestamp.today().normalize()
-df['اليوم'] = df['التاريخ'].dt.date
-
-# مبيعات اليوم
-sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
-
-# مبيعات الشهر
-sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
-
-# إجمالي المبيعات
-total_sales = df['المبيعات'].sum()
-
-# --- عرض النتائج ---
-col1, col2, col3 = st.columns(3)
-col1.metric("📅 مبيعات اليوم", f"{sales_today:,.0f} جنيه")
-col2.metric("🗓️ مبيعات الشهر", f"{sales_month:,.0f} جنيه")
-col3.metric("💰 إجمالي المبيعات", f"{total_sales:,.0f} جنيه")
-
-st.markdown("---")
-
-# --- رسم بياني خطي ---
+# --- الرسم البياني الزمني ---
 st.line_chart(df.set_index('التاريخ')['المبيعات'])
