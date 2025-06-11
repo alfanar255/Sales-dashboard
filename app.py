@@ -23,42 +23,62 @@ sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
 sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
 
-# --- عرض الشعار في اليمين، والعنوان في المنتصف ---
+# --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <div style="flex: 1;">
-            <!-- شعار في اليمين -->
-            <img src="company_logo.png" width="100" style="float: right;"/>
-        </div>
-        <div style="flex: 2; text-align: center;">
-            <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
-            <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
-        </div>
-        <div style="flex: 1;">
-            <!-- مسافة فارغة من اليسار -->
-        </div>
+    <div style="display: flex; justify-content: flex-end;">
+        <img src="company_logo.png.png" width="120" />
+    </div>
+    <div style="text-align: center; margin-top: -60px;">
+        <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
+        <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
     </div>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- تنسيق الأرقام بخط كبير ---
-st.markdown("""
-    <style>
-    .big-metric {
-        font-size: 30px !important;
-        font-weight: bold;
-        color: #0066cc;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-# --- عرض المؤشرات ---
-col1, col2, col3 = st.columns(3)
-col1.markdown(f"<div class='big-metric'>📅 مبيعات اليوم: {sales_today:,.0f} ريال</div>", unsafe_allow_html=True)
-col2.markdown(f"<div class='big-metric'>🗓️ مبيعات الشهر: {sales_month:,.0f} ريال</div>", unsafe_allow_html=True)
-col3.markdown(f"<div class='big-metric'>💰 إجمالي المبيعات: {total_sales:,.0f} ريال</div>", unsafe_allow_html=True)
+# --- الرسم البياني الزمني ---
+st.line_chart(df.set_index('التاريخ')['المبيعات'])
 
 st.markdown("---")
 
-# --- الرسم البياني الزمني ---
-st.line_chart(df.set_index('التاريخ')['المبيعات'])
+# --- تنسيق الأرقام ---
+st.markdown("""
+    <style>
+    .metric-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .metric-box {
+        text-align: center;
+        font-weight: bold;
+        color: #0066cc;
+    }
+    .metric-title {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    .metric-value {
+        font-size: 30px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
+st.markdown(f"""
+    <div class="metric-container">
+        <div class="metric-box">
+            <div class="metric-title">📅 مبيعات اليوم</div>
+            <div class="metric-value">{sales_today:,.0f} ريال</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">🗓️ مبيعات الشهر</div>
+            <div class="metric-value">{sales_month:,.0f} ريال</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">💰 إجمالي المبيعات</div>
+            <div class="metric-value">{total_sales:,.0f} ريال</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
