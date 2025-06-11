@@ -26,7 +26,6 @@ total_sales = df['المبيعات'].sum()
 # --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; justify-content: flex-end;">
-    <st.image("company_logo.png.png", width=100)>
         <img src="company_logo.png.png" width="120" />
     </div>
     <div style="text-align: center; margin-top: -60px;">
