@@ -14,7 +14,8 @@ def load_data():
     return df
 
 df = load_data()
-
+logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
+st.image(logo_url, width=120)
 # --- تحليل البيانات ---
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
@@ -26,8 +27,7 @@ total_sales = df['المبيعات'].sum()
 # --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; justify-content: flex-end;">
-logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
-st.image(logo_url, width=120)
+
 </div>
     <div style="text-align: center; margin-top: -60px;">
         <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
