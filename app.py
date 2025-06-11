@@ -46,7 +46,7 @@ st.markdown("---")
 st.markdown("""
     <style>
     .big-metric {
-        font-size: 40px !important;
+        font-size: 30px !important;
         font-weight: bold;
         color: #0066cc;
     }
