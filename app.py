@@ -51,8 +51,7 @@ st.markdown("""
         color: #0066cc;
     }
     </style>
-""", unsafe_allow_html=True)
-
+    """, unsafe_allow_html=True)
 # --- عرض المؤشرات ---
 col1, col2, col3 = st.columns(3)
 col1.markdown(f"<div class='big-metric'>📅 مبيعات اليوم: {sales_today:,.0f} ريال</div>", unsafe_allow_html=True)
