@@ -33,7 +33,16 @@ st.markdown("""
         <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
     </div>
 """, unsafe_allow_html=True)
-
+# شغل ساي
+col1, col2 = st.columns([1, 9])
+with col1:
+    st.image("company_logo.png", width=100)
+with col2:
+    st.markdown("""
+        <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 0;'>شركة الفنار لتوزيع الأدوية</h1>
+        <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
+    """, unsafe_allow_html=True)
+    # نهايته
 st.markdown("---")
 
 # --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
