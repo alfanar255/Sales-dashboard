@@ -26,6 +26,7 @@ total_sales = df['المبيعات'].sum()
 # --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
 st.markdown("""
     <div style="display: flex; justify-content: flex-end;">
+    st.image("company_logo.png.png", width=100)
         <img src="company_logo.png.png" width="120" />
     </div>
     <div style="text-align: center; margin-top: -60px;">
@@ -33,9 +34,7 @@ st.markdown("""
         <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
     </div>
 """, unsafe_allow_html=True)
-# شغل ساي
-    st.image("company_logo.png.png", width=100)
-    # نهايته
+    
 st.markdown("---")
 
 # --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
