@@ -34,10 +34,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 # شغل ساي
-col1, col2 = st.columns([1, 9])
-with col1:
     st.image("company_logo.png.png", width=100)
-with col2:
     # نهايته
 st.markdown("---")
 
