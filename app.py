@@ -36,6 +36,24 @@ st.markdown("""
 
 st.markdown("---")
 
+# --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
+st.markdown(f"""
+    <div class="metric-container">
+        <div class="metric-box">
+            <div class="metric-title">📅 مبيعات اليوم</div>
+            <div class="metric-value">{sales_today:,.0f} ريال</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">🗓️ مبيعات الشهر</div>
+            <div class="metric-value">{sales_month:,.0f} ريال</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">💰 إجمالي المبيعات</div>
+            <div class="metric-value">{total_sales:,.0f} ريال</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 # --- الرسم البياني الزمني ---
 st.line_chart(df.set_index('التاريخ')['المبيعات'])
 
@@ -65,20 +83,3 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
-st.markdown(f"""
-    <div class="metric-container">
-        <div class="metric-box">
-            <div class="metric-title">📅 مبيعات اليوم</div>
-            <div class="metric-value">{sales_today:,.0f} ريال</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-title">🗓️ مبيعات الشهر</div>
-            <div class="metric-value">{sales_month:,.0f} ريال</div>
-        </div>
-        <div class="metric-box">
-            <div class="metric-title">💰 إجمالي المبيعات</div>
-            <div class="metric-value">{total_sales:,.0f} ريال</div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
