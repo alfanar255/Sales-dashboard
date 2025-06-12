@@ -7,17 +7,24 @@ from streamlit_autorefresh import st_autorefresh
 st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار")
 
 # --- تفعيل التحديث التلقائي كل 60 ثانية ---
-st_autorefresh(interval=60 * 1000, key="refresh")
+refresh_interval = 60 * 1000  # بالمللي ثانية
+count = st_autorefresh(interval=refresh_interval, key="refresh")
 
 # --- تحميل البيانات من Google Sheets ---
-@st.cache_data(ttl=60)
+@st.cache_data
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
     df = pd.read_csv(url)
     df['التاريخ'] = pd.to_datetime(df['التاريخ'])
     return df
 
-df = load_data()
+# مسح الكاش عند كل تحديث تلقائي (عدا أول مرة)
+if count == 0:
+    df = load_data()
+else:
+    df = load_data(clear_cache=True)
+
+# --- تحميل اللوجو ---
 logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
 st.image(logo_url, width=120)
 
@@ -29,11 +36,9 @@ sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
 sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
 
-# --- عرض الشعار في أعلى يمين الصفحة والعنوان في المنتصف ---
+# --- عرض العنوان والشعار ---
 st.markdown("""
-    <div style="display: flex; justify-content: flex-end;">
-
-</div>
+    <div style="display: flex; justify-content: flex-end;"></div>
     <div style="text-align: center; margin-top: -60px;">
         <h1 style='font-size: 50px; color: #0059b3; margin-bottom: 5px;'>شركة الفنار لتوزيع الأدوية</h1>
         <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
