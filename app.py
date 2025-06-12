@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+from streamlit_autorefresh import st_autorefresh
 
 # --- إعداد الصفحة ---
 st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار")
+
+# --- تفعيل التحديث التلقائي كل 60 ثانية ---
+st_autorefresh(interval=60 * 1000, key="refresh")
 
 # --- تحميل البيانات من Google Sheets ---
 @st.cache_data(ttl=60)
@@ -16,6 +20,7 @@ def load_data():
 df = load_data()
 logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
 st.image(logo_url, width=120)
+
 # --- تحليل البيانات ---
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
@@ -34,10 +39,10 @@ st.markdown("""
         <h4 style='color: gray;'>لوحة المبيعات اليومية والتراكمية</h4>
     </div>
 """, unsafe_allow_html=True)
-    
+
 st.markdown("---")
 
-# --- عرض المؤشرات في نفس السطر لكن القيم في سطر تحت العنوان ---
+# --- عرض المؤشرات ---
 st.markdown(f"""
     <div class="metric-container">
         <div class="metric-box">
