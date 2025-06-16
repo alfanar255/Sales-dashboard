@@ -109,6 +109,7 @@ st.dataframe(result_df.style.format({
 }), use_container_width=True)
 
 # تنسيق CSS
+# تنسيق CSS
 st.markdown("""
     <style>
     .metric-container {
@@ -129,8 +130,12 @@ st.markdown("""
     .metric-value {
         font-size: 30px !important;
     }
+    .stDataFrame table {
+        direction: rtl;
+        text-align: right;
+    }
     .stDataFrame th, .stDataFrame td {
-        text-align: center !important;
+        text-align: right !important;
     }
     </style>
 """, unsafe_allow_html=True)
