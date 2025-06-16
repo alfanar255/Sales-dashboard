@@ -10,7 +10,7 @@ st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار
 refresh_interval = 60 * 1000
 count = st_autorefresh(interval=refresh_interval, key="refresh")
 
-# تحميل البيانات من Google Sheets مع معالجة الأخطاء
+# تحميل البيانات مع الكاش
 @st.cache_data(ttl=60)
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRz88_P5wG3NAxD1VXqDAAHU0Jm-lrr-lk8Ze1KO8p8iEIYiWw7PoHAvwhEYLs5YyzAbZt-JKd1pwkF/pub?gid=0&single=true&output=csv"
@@ -46,7 +46,7 @@ sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
 sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
 
-# عرض الإجماليات الرئيسية
+# عرض المؤشرات الرئيسية
 st.markdown(f"""
     <div class="metric-container">
         <div class="metric-box">
@@ -66,7 +66,7 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# تفاصيل المناديب
+# تحليل المناديب
 grouped = df.groupby('المندوب')
 result = []
 
@@ -95,9 +95,10 @@ for مندوب, data in grouped:
 
 result_df = pd.DataFrame(result)
 
-# عرض جدول المناديب
+# عرض جدول المناديب RTL باستخدام HTML
 st.subheader("تفاصيل المبيعات والتحصيل حسب المندوب")
-st.dataframe(result_df.style.format({
+
+html_table = result_df.style.format({
     'مبيعات اليوم': '{:,.0f} جنيه',
     'تحصيل اليوم': '{:,.0f} جنيه',
     'مبيعات الشهر': '{:,.0f} جنيه',
@@ -106,10 +107,18 @@ st.dataframe(result_df.style.format({
     'تارقت التحصيل': '{:,.0f} جنيه',
     'نسبة تحقيق المبيعات (%)': '{:.1f} %',
     'نسبة تحقيق التحصيل (%)': '{:.1f} %'
-}), use_container_width=True)
+}).to_html(index=False, justify='right', border=0)
 
-# تنسيق CSS
-# تنسيق CSS
+st.markdown(
+    f"""
+    <div style="direction: rtl; text-align: right">
+        {html_table}
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
+# تنسيق المؤشرات
 st.markdown("""
     <style>
     .metric-container {
@@ -129,13 +138,6 @@ st.markdown("""
     }
     .metric-value {
         font-size: 30px !important;
-    }
-    .stDataFrame table {
-        direction: rtl;
-        text-align: right;
-    }
-    .stDataFrame th, .stDataFrame td {
-        text-align: right !important;
     }
     </style>
 """, unsafe_allow_html=True)
