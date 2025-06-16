@@ -95,30 +95,42 @@ for مندوب, data in grouped:
 
 result_df = pd.DataFrame(result)
 
-# عرض جدول المناديب RTL باستخدام HTML
+# عرض جدول تفاصيل المناديب من اليمين إلى اليسار
 st.subheader("تفاصيل المبيعات والتحصيل حسب المندوب")
 
-html_table = result_df.style.format({
-    'مبيعات اليوم': '{:,.0f} جنيه',
-    'تحصيل اليوم': '{:,.0f} جنيه',
-    'مبيعات الشهر': '{:,.0f} جنيه',
-    'تحصيل الشهر': '{:,.0f} جنيه',
-    'تارقت المبيعات': '{:,.0f} جنيه',
-    'تارقت التحصيل': '{:,.0f} جنيه',
-    'نسبة تحقيق المبيعات (%)': '{:.1f} %',
-    'نسبة تحقيق التحصيل (%)': '{:.1f} %'
-}).to_html(index=False, justify='right', border=0)
+# تنسيق البيانات قبل العرض
+result_df_formatted = result_df.copy()
+for col in ['مبيعات اليوم', 'تحصيل اليوم', 'مبيعات الشهر', 'تحصيل الشهر', 'تارقت المبيعات', 'تارقت التحصيل']:
+    result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:,.0f} جنيه")
+for col in ['نسبة تحقيق المبيعات (%)', 'نسبة تحقيق التحصيل (%)']:
+    result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:.1f} %")
 
-st.markdown(
-    f"""
-    <div style="direction: rtl; text-align: right">
-        {html_table}
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
+# تحويل إلى HTML مع تنسيق RTL
+html_table = result_df_formatted.to_html(index=False, classes='styled-table')
 
-# تنسيق المؤشرات
+# عرض الجدول
+st.markdown(f"""
+    <style>
+    .styled-table {{
+        width: 100%;
+        direction: rtl;
+        text-align: right;
+        border-collapse: collapse;
+        font-size: 18px;
+    }}
+    .styled-table th, .styled-table td {{
+        border: 1px solid #ccc;
+        padding: 8px;
+    }}
+    .styled-table th {{
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }}
+    </style>
+    {html_table}
+""", unsafe_allow_html=True)
+
+# تنسيق المؤشرات الرئيسية
 st.markdown("""
     <style>
     .metric-container {
