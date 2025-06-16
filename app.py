@@ -10,13 +10,18 @@ st.set_page_config(layout="wide", page_title="لوحة مبيعات الفنار
 refresh_interval = 60 * 1000  # 60 ثانية
 count = st_autorefresh(interval=refresh_interval, key="refresh")
 
-# --- تحميل البيانات من Google Sheets مع الكاش ---
+# --- تحميل البيانات من Google Sheets مع معالجة الأخطاء ---
 @st.cache_data(ttl=60)
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
-    df = pd.read_csv(url)
-    df['التاريخ'] = pd.to_datetime(df['التاريخ'])
-    return df
+    try:
+        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
+        df = pd.read_csv(url)
+        df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
+        df = df.dropna(subset=['التاريخ'])
+        return df
+    except Exception as e:
+        st.error(f"حدث خطأ أثناء تحميل البيانات: {e}")
+        return pd.DataFrame(columns=['التاريخ', 'المبيعات'])
 
 df = load_data()
 
@@ -29,7 +34,7 @@ today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
 
 sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
-sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
+sales_month = df[(df['التاريخ'].dt.month == today.month) & (df['التاريخ'].dt.year == today.year)]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
 
 # --- العنوان ---
@@ -61,7 +66,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- الرسم البياني ---
-st.line_chart(df.set_index('التاريخ')['المبيعات'])
+if not df.empty:
+    st.line_chart(df.set_index('التاريخ')['المبيعات'])
+else:
+    st.warning("لا توجد بيانات متاحة لعرضها حالياً.")
 
 st.markdown("---")
 
@@ -78,13 +86,19 @@ st.markdown("""
         text-align: center;
         font-weight: bold;
         color: #0066cc;
+        background-color: #f0f8ff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        width: 30%;
     }
     .metric-title {
         font-size: 24px;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
     }
     .metric-value {
-        font-size: 30px !important;
+        font-size: 32px !important;
+        color: #003366;
     }
     </style>
 """, unsafe_allow_html=True)
