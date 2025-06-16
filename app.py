@@ -66,7 +66,7 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# تحليل المناديب
+# تحليل بيانات المناديب
 grouped = df.groupby('المندوب')
 result = []
 
@@ -82,6 +82,7 @@ for مندوب, data in grouped:
     collection_ach = (collection_month / collection_target * 100) if collection_target else 0
 
     result.append({
+        'المندوب': مندوب,
         'مبيعات اليوم': sales_today,
         'تحصيل اليوم': collection_today,
         'مبيعات الشهر': sales_month,
@@ -90,14 +91,9 @@ for مندوب, data in grouped:
         'تارقت التحصيل': collection_target,
         'نسبة تحقيق المبيعات (%)': sales_ach,
         'نسبة تحقيق التحصيل (%)': collection_ach
-                'المندوب': مندوب,
-
     })
 
 result_df = pd.DataFrame(result)
-
-# عرض جدول تفاصيل المناديب من اليمين إلى اليسار
-st.subheader("تفاصيل المبيعات والتحصيل حسب المندوب")
 
 # تنسيق البيانات قبل العرض
 result_df_formatted = result_df.copy()
@@ -106,32 +102,33 @@ for col in ['مبيعات اليوم', 'تحصيل اليوم', 'مبيعات ا
 for col in ['نسبة تحقيق المبيعات (%)', 'نسبة تحقيق التحصيل (%)']:
     result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:.1f} %")
 
-# تحويل إلى HTML مع تنسيق RTL
-html_table = result_df_formatted.to_html(index=False, classes='styled-table')
+# --- جدول تفاصيل المناديب من اليمين لليسار ---
+st.subheader("📋 تفاصيل المبيعات والتحصيل حسب المندوب")
 
-# عرض الجدول
+html_table = result_df_formatted.to_html(index=False, escape=False)
+
 st.markdown(f"""
+<div dir="rtl" style="text-align: right;">
     <style>
-    .styled-table {{
-        width: 100%;
-        direction: rtl;
-        text-align: right;
-        border-collapse: collapse;
-        font-size: 18px;
-    }}
-    .styled-table th, .styled-table td {{
-        border: 1px solid #ccc;
-        padding: 8px;
-    }}
-    .styled-table th {{
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }}
+        th, td {{
+            border: 1px solid #ccc;
+            padding: 8px;
+        }}
+        th {{
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }}
     </style>
     {html_table}
+</div>
 """, unsafe_allow_html=True)
 
-# تنسيق المؤشرات الرئيسية
+# --- CSS لتنسيق المؤشرات ---
 st.markdown("""
     <style>
     .metric-container {
