@@ -21,7 +21,6 @@ def load_data():
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     return df
 
-# تحميل البيانات
 df = load_data()
 
 # الشعار والعنوان
@@ -41,12 +40,11 @@ st.markdown("---")
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
 
-# حساب الإجماليات
+# حساب المؤشرات الرئيسية
 sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
 sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
 
-# عرض المؤشرات الرئيسية
 st.markdown(f"""
     <div class="metric-container">
         <div class="metric-box">
@@ -77,7 +75,6 @@ for مندوب, data in grouped:
     collection_month = data[data['التاريخ'].dt.month == today.month]['التحصيل'].sum()
     sales_target = data['تارقت المبيعات'].max()
     collection_target = data['تارقت التحصيل'].max()
-
     sales_ach = (sales_month / sales_target * 100) if sales_target else 0
     collection_ach = (collection_month / collection_target * 100) if collection_target else 0
 
@@ -102,24 +99,26 @@ for col in ['مبيعات اليوم', 'تحصيل اليوم', 'مبيعات ا
 for col in ['نسبة تحقيق المبيعات (%)', 'نسبة تحقيق التحصيل (%)']:
     result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:.1f} %")
 
-# --- جدول تفاصيل المناديب من اليمين لليسار ---
+# ✅ جدول RTL
 st.subheader("📋 تفاصيل المبيعات والتحصيل حسب المندوب")
 
-html_table = result_df_formatted.to_html(index=False, escape=False)
+html_table = result_df_formatted.to_html(index=False, escape=False, classes='custom-table')
 
 st.markdown(f"""
 <div dir="rtl" style="text-align: right;">
     <style>
-        table {{
+        .custom-table {{
+            direction: rtl;
             width: 100%;
             border-collapse: collapse;
             font-size: 18px;
+            text-align: right;
         }}
-        th, td {{
+        .custom-table th, .custom-table td {{
             border: 1px solid #ccc;
             padding: 8px;
         }}
-        th {{
+        .custom-table th {{
             background-color: #f2f2f2;
             font-weight: bold;
         }}
@@ -128,7 +127,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CSS لتنسيق المؤشرات ---
+# تنسيق CSS للمؤشرات
 st.markdown("""
     <style>
     .metric-container {
