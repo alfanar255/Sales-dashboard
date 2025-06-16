@@ -14,7 +14,7 @@ count = st_autorefresh(interval=refresh_interval, key="refresh")
 @st.cache_data(ttl=60)
 def load_data():
     try:
-        url = "رابط ملف Google Sheet بعد تعديله"
+        url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRz88_P5wG3NAxD1VXqDAAHU0Jm-lrr-lk8Ze1KO8p8iEIYiWw7PoHAvwhEYLs5YyzAbZt-JKd1pwkF/pubhtml?gid=0&single=true"
         df = pd.read_csv(url)
         df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
         df = df.dropna(subset=['التاريخ'])
