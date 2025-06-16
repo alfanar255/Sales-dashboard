@@ -17,7 +17,7 @@ def load_data():
     df = pd.read_csv(url, on_bad_lines='skip')
     df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
     df = df.dropna(subset=['التاريخ'])
-    for col in ['المبيعات', 'التحصيل', 'تارقت المبيعات', 'تارقت التحصيل']:
+    for col in ['المبيعات', 'التحصيل', 'تارقت المبيعات', 'تارقت التحصيل', 'المرتجعات']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     return df
 
@@ -40,10 +40,10 @@ st.markdown("---")
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
 
-# حساب المؤشرات الرئيسية
-sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
-sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
-total_sales = df['المبيعات'].sum()
+# حساب المؤشرات الرئيسية (صافي المبيعات)
+sales_today = (df[df['اليوم'] == today.date()]['المبيعات'] - df[df['اليوم'] == today.date()]['المرتجعات']).sum()
+sales_month = (df[df['التاريخ'].dt.month == today.month]['المبيعات'] - df[df['التاريخ'].dt.month == today.month]['المرتجعات']).sum()
+total_sales = (df['المبيعات'] - df['المرتجعات']).sum()
 
 st.markdown(f"""
     <div class="metric-container">
@@ -69,9 +69,9 @@ grouped = df.groupby('المندوب')
 result = []
 
 for مندوب, data in grouped:
-    sales_today = data[data['اليوم'] == today.date()]['المبيعات'].sum()
+    sales_today = (data[data['اليوم'] == today.date()]['المبيعات'] - data[data['اليوم'] == today.date()]['المرتجعات']).sum()
     collection_today = data[data['اليوم'] == today.date()]['التحصيل'].sum()
-    sales_month = data[data['التاريخ'].dt.month == today.month]['المبيعات'].sum()
+    sales_month = (data[data['التاريخ'].dt.month == today.month]['المبيعات'] - data[data['التاريخ'].dt.month == today.month]['المرتجعات']).sum()
     collection_month = data[data['التاريخ'].dt.month == today.month]['التحصيل'].sum()
     sales_target = data['تارقت المبيعات'].max()
     collection_target = data['تارقت التحصيل'].max()
@@ -99,7 +99,7 @@ for col in ['مبيعات اليوم', 'تحصيل اليوم', 'مبيعات ا
 for col in ['نسبة تحقيق المبيعات (%)', 'نسبة تحقيق التحصيل (%)']:
     result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:.1f} %")
 
-# ✅ جدول RTL
+# جدول تفاصيل المناديب مع دعم RTL
 st.subheader("📋 تفاصيل المبيعات والتحصيل حسب المندوب")
 
 html_table = result_df_formatted.to_html(index=False, escape=False, classes='custom-table')
