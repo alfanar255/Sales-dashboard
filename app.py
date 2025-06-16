@@ -82,7 +82,6 @@ for مندوب, data in grouped:
     collection_ach = (collection_month / collection_target * 100) if collection_target else 0
 
     result.append({
-        'المندوب': مندوب,
         'مبيعات اليوم': sales_today,
         'تحصيل اليوم': collection_today,
         'مبيعات الشهر': sales_month,
@@ -91,6 +90,8 @@ for مندوب, data in grouped:
         'تارقت التحصيل': collection_target,
         'نسبة تحقيق المبيعات (%)': sales_ach,
         'نسبة تحقيق التحصيل (%)': collection_ach
+                'المندوب': مندوب,
+
     })
 
 result_df = pd.DataFrame(result)
