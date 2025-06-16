@@ -40,11 +40,16 @@ st.markdown("---")
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
 
-# حساب المؤشرات الرئيسية (صافي المبيعات)
-sales_today = (df[df['اليوم'] == today.date()]['المبيعات'] - df[df['اليوم'] == today.date()]['المرتجعات']).sum()
-sales_month = (df[df['التاريخ'].dt.month == today.month]['المبيعات'] - df[df['التاريخ'].dt.month == today.month]['المرتجعات']).sum()
-total_sales = (df['المبيعات'] - df['المرتجعات']).sum()
+# حساب المؤشرات الرئيسية مع خصم المرتجعات
+sales_today = (df[df['اليوم'] == today.date()]['المبيعات'].sum() 
+               - df[df['اليوم'] == today.date()]['المرتجعات'].sum())
 
+sales_month = (df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum() 
+                - df[df['التاريخ'].dt.month == today.month]['المرتجعات'].sum())
+
+total_sales = df['المبيعات'].sum() - df['مرتجعات'].sum()
+
+# عرض المؤشرات
 st.markdown(f"""
     <div class="metric-container">
         <div class="metric-box">
@@ -64,17 +69,23 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# تحليل بيانات المناديب
+# تحليل بيانات المناديب مع خصم المرتجعات بشكل صحيح
 grouped = df.groupby('المندوب')
 result = []
 
 for مندوب, data in grouped:
-    sales_today = (data[data['اليوم'] == today.date()]['المبيعات'] - data[data['اليوم'] == today.date()]['المرتجعات']).sum()
-    collection_today = data[data['اليوم'] == today.date()]['التحصيل'].sum()
-    sales_month = (data[data['التاريخ'].dt.month == today.month]['المبيعات'] - data[data['التاريخ'].dt.month == today.month]['المرتجعات']).sum()
-    collection_month = data[data['التاريخ'].dt.month == today.month]['التحصيل'].sum()
+    today_data = data[data['اليوم'] == today.date()]
+    month_data = data[data['التاريخ'].dt.month == today.month]
+
+    sales_today = today_data['المبيعات'].sum() - today_data['المرتجعات'].sum()
+    collection_today = today_data['التحصيل'].sum()
+
+    sales_month = month_data['المبيعات'].sum() - month_data['المرتجعات'].sum()
+    collection_month = month_data['التحصيل'].sum()
+
     sales_target = data['تارقت المبيعات'].max()
     collection_target = data['تارقت التحصيل'].max()
+
     sales_ach = (sales_month / sales_target * 100) if sales_target else 0
     collection_ach = (collection_month / collection_target * 100) if collection_target else 0
 
@@ -99,33 +110,32 @@ for col in ['مبيعات اليوم', 'تحصيل اليوم', 'مبيعات ا
 for col in ['نسبة تحقيق المبيعات (%)', 'نسبة تحقيق التحصيل (%)']:
     result_df_formatted[col] = result_df_formatted[col].apply(lambda x: f"{x:.1f} %")
 
-# جدول تفاصيل المناديب مع دعم RTL
+# جدول تفاصيل المناديب من اليمين لليسار
 st.subheader("📋 تفاصيل المبيعات والتحصيل حسب المندوب")
 
-html_table = result_df_formatted.to_html(index=False, escape=False, classes='custom-table')
+html_table = result_df_formatted.to_html(index=False, classes='custom-table', border=0)
 
-st.markdown(f"""
-<div dir="rtl" style="text-align: right;">
+st.markdown("""
     <style>
-        .custom-table {{
+        .custom-table {
             direction: rtl;
             width: 100%;
             border-collapse: collapse;
             font-size: 18px;
             text-align: right;
-        }}
-        .custom-table th, .custom-table td {{
+        }
+        .custom-table th, .custom-table td {
             border: 1px solid #ccc;
             padding: 8px;
-        }}
-        .custom-table th {{
+        }
+        .custom-table th {
             background-color: #f2f2f2;
             font-weight: bold;
-        }}
+        }
     </style>
-    {html_table}
-</div>
 """, unsafe_allow_html=True)
+
+st.markdown(html_table, unsafe_allow_html=True)
 
 # تنسيق CSS للمؤشرات
 st.markdown("""
