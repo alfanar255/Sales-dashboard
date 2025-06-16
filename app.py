@@ -13,10 +13,9 @@ count = st_autorefresh(interval=refresh_interval, key="refresh")
 # --- تحميل البيانات من Google Sheets مع الكاش ---
 @st.cache_data(ttl=60)
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRz88_P5wG3NAxD1VXqDAAHU0Jm-lrr-lk8Ze1KO8p8iEIYiWw7PoHAvwhEYLs5YyzAbZt-JKd1pwkF/pubhtml?gid=0&single=true"
+    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr1bKG318tXo1PSOR7yHBWUjwu0Ca60zjHiCA_ryzt7Bo2zcVHrplms1DQBQjXj5Yw7ssAymZEOeYe/pub?gid=0&single=true&output=csv"
     df = pd.read_csv(url)
-    df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
-    df = df.dropna(subset=['التاريخ'])
+    df['التاريخ'] = pd.to_datetime(df['التاريخ'])
     return df
 
 df = load_data()
@@ -29,7 +28,6 @@ st.image(logo_url, width=120)
 today = pd.Timestamp.today().normalize()
 df['اليوم'] = df['التاريخ'].dt.date
 
-# --- المؤشرات الإجمالية ---
 sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
 sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
 total_sales = df['المبيعات'].sum()
@@ -64,57 +62,6 @@ st.markdown(f"""
 
 # --- الرسم البياني ---
 st.line_chart(df.set_index('التاريخ')['المبيعات'])
-
-st.markdown("---")
-
-# --- تفاصيل المناديب ---
-st.header("📊 أداء المناديب")
-
-# بيانات اليوم لكل مندوب
-daily = df[df['اليوم'] == today.date()].groupby('المندوب').agg({
-    'المبيعات': 'sum',
-    'التحصيل': 'sum',
-    'تارقت المبيعات': 'sum',
-    'تارقت التحصيل': 'sum'
-}).reset_index()
-
-st.subheader("مبيعات وتحصيل اليوم")
-if not daily.empty:
-    daily['فرق المبيعات عن التارقت'] = daily['المبيعات'] - daily['تارقت المبيعات']
-    daily['فرق التحصيل عن التارقت'] = daily['التحصيل'] - daily['تارقت التحصيل']
-    st.dataframe(daily.style.format({
-        'المبيعات': '{:,.0f}',
-        'التحصيل': '{:,.0f}',
-        'تارقت المبيعات': '{:,.0f}',
-        'تارقت التحصيل': '{:,.0f}',
-        'فرق المبيعات عن التارقت': '{:,.0f}',
-        'فرق التحصيل عن التارقت': '{:,.0f}',
-    }))
-else:
-    st.warning("لا توجد بيانات متاحة لليوم.")
-
-# بيانات الشهر لكل مندوب
-monthly = df[df['التاريخ'].dt.month == today.month].groupby('المندوب').agg({
-    'المبيعات': 'sum',
-    'التحصيل': 'sum',
-    'تارقت المبيعات': 'sum',
-    'تارقت التحصيل': 'sum'
-}).reset_index()
-
-st.subheader("مبيعات وتحصيل الشهر")
-if not monthly.empty:
-    monthly['فرق المبيعات عن التارقت'] = monthly['المبيعات'] - monthly['تارقت المبيعات']
-    monthly['فرق التحصيل عن التارقت'] = monthly['التحصيل'] - monthly['تارقت التحصيل']
-    st.dataframe(monthly.style.format({
-        'المبيعات': '{:,.0f}',
-        'التحصيل': '{:,.0f}',
-        'تارقت المبيعات': '{:,.0f}',
-        'تارقت التحصيل': '{:,.0f}',
-        'فرق المبيعات عن التارقت': '{:,.0f}',
-        'فرق التحصيل عن التارقت': '{:,.0f}',
-    }))
-else:
-    st.warning("لا توجد بيانات متاحة لهذا الشهر.")
 
 st.markdown("---")
 
