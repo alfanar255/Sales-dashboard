@@ -14,12 +14,16 @@ count = st_autorefresh(interval=refresh_interval, key="refresh")
 @st.cache_data(ttl=60)
 def load_data():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRz88_P5wG3NAxD1VXqDAAHU0Jm-lrr-lk8Ze1KO8p8iEIYiWw7PoHAvwhEYLs5YyzAbZt-JKd1pwkF/pub?gid=0&single=true&output=csv"
-    df = pd.read_csv(url)
-    df['التاريخ'] = pd.to_datetime(df['التاريخ'])
-    # التأكد من أن القيم الرقمية صحيحة
-    for col in ['المبيعات', 'التحصيل', 'تارقت المبيعات', 'تارقت التحصيل']:
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    return df
+    try:
+        df = pd.read_csv(url, on_bad_lines='skip')
+        df['التاريخ'] = pd.to_datetime(df['التاريخ'], errors='coerce')
+        df = df.dropna(subset=['التاريخ'])
+        for col in ['المبيعات', 'التحصيل', 'تارقت المبيعات', 'تارقت التحصيل']:
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+        return df
+    except Exception as e:
+        st.error(f"حدث خطأ أثناء تحميل البيانات: {e}")
+        return pd.DataFrame()
 
 df = load_data()
 
@@ -27,24 +31,46 @@ df = load_data()
 logo_url = "https://raw.githubusercontent.com/alfanar255/Sales-dashboard/main/company_logo2.png"
 st.image(logo_url, width=120)
 
-# --- تحليل البيانات ---
-today = pd.Timestamp.today().normalize()
-df['اليوم'] = df['التاريخ'].dt.date
-
-# العنوان الرئيسي
+# --- العنوان الرئيسي ---
 st.markdown("""
     <div style="text-align: center; margin-top: -60px;">
         <h1 style='font-size: 50px; color: #0059b3;'>شركة الفنار لتوزيع الأدوية</h1>
-        <h4 style='color: gray;'>لوحة متابعة المبيعات والتحصيل للمناديب</h4>
+        <h4 style='color: gray;'>لوحة متابعة المبيعات والتحصيل</h4>
     </div>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- حساب المؤشرات لكل مندوب ---
-grouped = df.groupby('المندوب')
+# --- حساب الإجماليات العامة ---
+today = pd.Timestamp.today().normalize()
+df['اليوم'] = df['التاريخ'].dt.date
 
-# إنشاء جدول للعرض
+sales_today = df[df['اليوم'] == today.date()]['المبيعات'].sum()
+sales_month = df[df['التاريخ'].dt.month == today.month]['المبيعات'].sum()
+total_sales = df['المبيعات'].sum()
+
+# --- عرض الإجماليات العامة ---
+st.markdown(f"""
+    <div class="metric-container">
+        <div class="metric-box">
+            <div class="metric-title">📅 مبيعات اليوم</div>
+            <div class="metric-value">{sales_today:,.0f} جنيه</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">🗓️ مبيعات الشهر</div>
+            <div class="metric-value">{sales_month:,.0f} جنيه</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-title">💰 إجمالي المبيعات</div>
+            <div class="metric-value">{total_sales:,.0f} جنيه</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# --- تفاصيل المناديب ---
+grouped = df.groupby('المندوب')
 result = []
 
 for مندوب, data in grouped:
@@ -78,7 +104,8 @@ for مندوب, data in grouped:
 
 result_df = pd.DataFrame(result)
 
-# --- عرض النتائج ---
+# --- عرض جدول المناديب ---
+st.subheader("تفاصيل المبيعات والتحصيل حسب المندوب")
 st.dataframe(result_df.style.format({
     'مبيعات اليوم': '{:,.0f} جنيه',
     'تحصيل اليوم': '{:,.0f} جنيه',
@@ -93,9 +120,26 @@ st.dataframe(result_df.style.format({
 # --- تنسيق CSS ---
 st.markdown("""
     <style>
+    .metric-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .metric-box {
+        text-align: center;
+        font-weight: bold;
+        color: #0066cc;
+    }
+    .metric-title {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    .metric-value {
+        font-size: 30px !important;
+    }
     .stDataFrame th, .stDataFrame td {
         text-align: center !important;
     }
     </style>
 """, unsafe_allow_html=True)
-
