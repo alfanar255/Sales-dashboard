@@ -61,9 +61,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # --- الرسم البياني ---
-st.line_chart(df.set_index('التاريخ')['المبيعات'])
 
-st.markdown("---")
 
 # --- تنسيق CSS ---
 st.markdown("""
