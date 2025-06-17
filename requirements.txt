@@ -2,3 +2,4 @@ streamlit
 gspread
 oauth2clint
 pandas
+google-auth
